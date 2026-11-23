@@ -16,7 +16,6 @@ function EditProduct() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // Load the existing product information
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -37,7 +36,6 @@ function EditProduct() {
     fetchProduct();
   }, [id]);
 
-  // Save the updated product
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -53,83 +51,133 @@ function EditProduct() {
         imageUrl,
       });
 
-      navigate("/my-products");
+      navigate("/my-products", {
+        state: {
+          successMessage: "Product updated successfully!",
+        },
+      });
     } catch (err) {
-      setError(err.response?.data?.message || "Could not update product.");
+      console.log("UPDATE ERROR:", err.response?.data || err.message);
+
+      const errorData = err.response?.data;
+
+      setError(
+        typeof errorData === "string"
+          ? errorData
+          : errorData?.message ||
+              errorData?.title ||
+              "Could not update product.",
+      );
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <p>Loading product...</p>;
+  if (loading) {
+    return <p className="status-message">Loading product...</p>;
+  }
 
   return (
-    <div>
-      <h1>Edit Product</h1>
+    <main className="product-form-page">
+      <section className="product-form-header">
+        <p className="section-label">CYBERMERCE / SELLER TERMINAL</p>
+        <h1>
+          EDIT <span>PRODUCT</span>
+        </h1>
+        <p>Update your product information and inventory.</p>
+      </section>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Product Name</label>
-          <input
-            type="text"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
-            minLength={5}
-            maxLength={100}
-            required
-          />
+      <section className="product-form-card">
+        <div className="form-card-heading">
+          <span className="form-status-dot"></span>
+          <h2>PRODUCT MODIFICATION</h2>
+          <span className="form-required">* REQUIRED FIELDS</span>
         </div>
 
-        <div>
-          <label>Description</label>
-          <textarea
-            value={productDescription}
-            onChange={(e) => setProductDescription(e.target.value)}
-            maxLength={1000}
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="product-form">
+          <div className="form-field">
+            <label htmlFor="productName">PRODUCT NAME *</label>
+            <input
+              id="productName"
+              type="text"
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              minLength={5}
+              maxLength={100}
+              required
+            />
+            <small>5–100 characters</small>
+          </div>
 
-        <div>
-          <label>Price</label>
-          <input
-            type="number"
-            value={productPrice}
-            onChange={(e) => setProductPrice(e.target.value)}
-            min="0.01"
-            step="0.01"
-            required
-          />
-        </div>
+          <div className="form-field">
+            <label htmlFor="productDescription">DESCRIPTION *</label>
+            <textarea
+              id="productDescription"
+              value={productDescription}
+              onChange={(e) => setProductDescription(e.target.value)}
+              maxLength={1000}
+              required
+            />
+            <small>Maximum 1000 characters</small>
+          </div>
 
-        <div>
-          <label>Stock</label>
-          <input
-            type="number"
-            value={stock}
-            onChange={(e) => setStock(e.target.value)}
-            min="1"
-            step="1"
-            required
-          />
-        </div>
+          <div className="form-row">
+            <div className="form-field">
+              <label htmlFor="productPrice">PRICE (ALL) *</label>
+              <input
+                id="productPrice"
+                type="number"
+                value={productPrice}
+                onChange={(e) => setProductPrice(e.target.value)}
+                min="0.01"
+                step="0.01"
+                required
+              />
+            </div>
 
-        <div>
-          <label>Image URL (optional)</label>
-          <input
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-          />
-        </div>
+            <div className="form-field">
+              <label htmlFor="stock">AVAILABLE STOCK *</label>
+              <input
+                id="stock"
+                type="number"
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                min="1"
+                step="1"
+                required
+              />
+            </div>
+          </div>
 
-        {error && <p>{error}</p>}
+          <div className="form-field">
+            <label htmlFor="imageUrl">IMAGE URL</label>
+            <input
+              id="imageUrl"
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+            />
+            <small>Optional — update your product image link</small>
+          </div>
 
-        <button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Save Changes"}
-        </button>
-      </form>
-    </div>
+          {error && <p className="product-form-error">{error}</p>}
+
+          <div className="product-form-actions">
+            <button type="submit" disabled={saving}>
+              {saving ? "SAVING CHANGES..." : "SAVE CHANGES"}
+            </button>
+
+            <button
+              type="button"
+              className="cancel-form-button"
+              onClick={() => navigate("/my-products")}
+            >
+              CANCEL
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
   );
 }
 

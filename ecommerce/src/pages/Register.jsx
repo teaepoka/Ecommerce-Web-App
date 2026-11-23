@@ -55,60 +55,81 @@ function Register() {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+    <div className="auth-page">
+      <div className="auth-card register-card">
+        <div className="auth-brand">
+          CYBER<span>MERCE</span>
         </div>
 
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+        <p className="auth-label">JOIN THE NETWORK</p>
+
+        <h1>REGISTER</h1>
+
+        <p className="auth-subtitle">
+          Create your account and enter the cyber world.
+        </p>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="auth-input-group">
+            <label htmlFor="username">USERNAME</label>
+            <input
+              id="username"
+              type="text"
+              placeholder="Choose a username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <label htmlFor="email">EMAIL ADDRESS</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <label htmlFor="password">PASSWORD</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <label htmlFor="confirmPassword">CONFIRM PASSWORD</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              placeholder="Repeat your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && <p className="auth-error">{error}</p>}
+
+          <button type="submit" disabled={loading} className="auth-button">
+            {loading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          <p>Already have an account?</p>
+          <Link to="/login">Login here</Link>
         </div>
-
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        {error && <p>{error}</p>}
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Registering..." : "Register"}
-        </button>
-      </form>
-
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+      </div>
     </div>
   );
 }

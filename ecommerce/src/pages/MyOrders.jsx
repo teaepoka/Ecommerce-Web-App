@@ -10,7 +10,11 @@ function MyOrders() {
     const fetchOrders = async () => {
       try {
         const data = await getMyOrders();
-        setOrders(data);
+        setOrders(
+          [...data].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+          ),
+        );
       } catch (err) {
         setError(err.response?.data?.message || "Could not load your orders.");
       } finally {
@@ -21,38 +25,101 @@ function MyOrders() {
     fetchOrders();
   }, []);
 
-  if (loading) return <p>Loading your orders...</p>;
+  if (loading) {
+    return (
+      <div className="orders-status">
+        <p>LOADING YOUR ORDERS...</p>
+      </div>
+    );
+  }
 
-  if (error) return <p>{error}</p>;
+  if (error) {
+    return (
+      <div className="orders-status orders-error">
+        <p>{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h1>My Orders</h1>
+    <div className="orders-page">
+      <div className="orders-heading">
+        <p className="orders-label">TRANSACTION HISTORY</p>
+        <h1>
+          MY <span>ORDERS</span>
+        </h1>
+        <p className="orders-subtitle">Your purchases, all in one place.</p>
+      </div>
 
       {orders.length === 0 ? (
-        <p>You haven't placed any orders yet.</p>
+        <div className="orders-empty">
+          <div className="orders-empty-icon">⌁</div>
+          <h2>NO ORDERS FOUND</h2>
+          <p>You haven't placed any orders yet.</p>
+        </div>
       ) : (
-        orders.map((order) => (
-          <div key={order.id}>
-            <h2>Order: {order.orderNumber}</h2>
+        <div className="orders-list">
+          {orders.map((order) => (
+            <details className="order-card" key={order.id}>
+              <summary className="order-card-summary">
+                <div className="order-summary-main">
+                  <div>
+                    <p className="order-label">ORDER NUMBER</p>
+                    <h2>#{order.orderNumber}</h2>
+                  </div>
 
-            <p>Date: {new Date(order.createdAt).toLocaleString()}</p>
+                  <div className="order-date">
+                    <p className="order-label">DATE</p>
+                    <span>
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
 
-            <h3>Products:</h3>
+                  <div className="order-item-count">
+                    <p className="order-label">ITEMS</p>
+                    <span>{order.orderItems.length}</span>
+                  </div>
+                </div>
 
-            {order.orderItems.map((item) => (
-              <div key={item.id}>
-                <h4>{item.product.productName}</h4>
-                <p>Price: {item.product.productPrice}</p>
-                <p>Quantity: {item.quantity}</p>
-                <p>Total: {item.totalAmount}</p>
+                <div className="order-summary-total">
+                  <strong>
+                    {Number(order.totalAmount).toLocaleString("sq-AL")} ALL
+                  </strong>
+                  <span className="order-expand">VIEW DETAILS +</span>
+                </div>
+              </summary>
+
+              <div className="order-details">
+                <p className="order-section-title">PURCHASED ITEMS</p>
+
+                {order.orderItems.map((item) => (
+                  <div className="order-product" key={item.id}>
+                    <div className="order-product-info">
+                      <h3>{item.product.productName}</h3>
+                      <p>
+                        {Number(item.product.productPrice).toLocaleString(
+                          "sq-AL",
+                        )}{" "}
+                        ALL × {item.quantity}
+                      </p>
+                    </div>
+
+                    <span className="order-item-total">
+                      {Number(item.totalAmount).toLocaleString("sq-AL")} ALL
+                    </span>
+                  </div>
+                ))}
+
+                <div className="order-total">
+                  <span>ORDER TOTAL</span>
+                  <strong>
+                    {Number(order.totalAmount).toLocaleString("sq-AL")} ALL
+                  </strong>
+                </div>
               </div>
-            ))}
-
-            <h3>Order Total: {order.totalAmount}</h3>
-            <hr />
-          </div>
-        ))
+            </details>
+          ))}
+        </div>
       )}
     </div>
   );

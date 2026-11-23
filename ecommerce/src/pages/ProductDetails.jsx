@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useLocation } from "react-router";
 import { getProductById, addToCart } from "../api/products";
 import { useAuth } from "../context/AuthContext";
 
 function ProductDetails() {
   const { id } = useParams();
   const { user } = useAuth();
+  const location = useLocation();
+
+  const backTo = location.state?.from || "/";
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,70 +41,111 @@ function ProductDetails() {
       await addToCart(product.id, Number(quantity));
       setCartMessage("Product added to cart!");
     } catch (err) {
-      setCartMessage(
-        err.response?.data?.message || "Could not add product to cart.",
-      );
+      const errorData = err.response?.data;
+
+      const errorMessage =
+        typeof errorData === "string"
+          ? errorData
+          : errorData?.message ||
+            errorData?.title ||
+            "Could not add product to cart.";
+
+      setCartMessage(errorMessage);
     } finally {
       setCartLoading(false);
     }
   };
 
-  if (loading) return <p>Loading product...</p>;
-
-  if (error) return <p>{error}</p>;
-
-  if (!product) return <p>Product not found.</p>;
+  if (loading) return <p className="status-message">Loading product...</p>;
+  if (error) return <p className="status-message">{error}</p>;
+  if (!product) return <p className="status-message">Product not found.</p>;
 
   return (
-    <div>
-      <h1>{product.productName}</h1>
+    <main className="product-details-page">
+      <Link to="/" className="back-link">
+        ← BACK TO PRODUCTS
+      </Link>
 
-      {product.imageUrl && (
-        <img src={product.imageUrl} alt={product.productName} width="200" />
-      )}
-
-      <p>{product.productDescription}</p>
-      <p>Price: {product.productPrice}</p>
-      <p>Stock: {product.stock}</p>
-      <p>Seller: {product.username}</p>
-
-      {user && user.id !== product.userId && product.stock > 0 && (
-        <div>
-          <label>Quantity:</label>
-
-          <input
-            type="number"
-            min="1"
-            max={product.stock}
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-          />
-
-          <button
-            onClick={handleAddToCart}
-            disabled={
-              cartLoading ||
-              Number(quantity) < 1 ||
-              Number(quantity) > product.stock
-            }
-          >
-            {cartLoading ? "Adding..." : "Add to Cart"}
-          </button>
-
-          {cartMessage && <p>{cartMessage}</p>}
+      <section className="product-details-card">
+        <div className="details-image">
+          {product.imageUrl ? (
+            <img src={product.imageUrl} alt={product.productName} />
+          ) : (
+            <div className="details-no-image">NO IMAGE AVAILABLE</div>
+          )}
         </div>
-      )}
 
-      {user && user.id === product.userId && (
-        <p>You cannot buy your own product.</p>
-      )}
+        <div className="details-info">
+          <p className="details-label">CYBERMERCE / PRODUCT DETAILS</p>
 
-      {product.stock === 0 && <p>Out of stock.</p>}
+          <h1>{product.productName}</h1>
 
-      {!user && <p>Please log in to add products to your cart.</p>}
+          <p className="details-price">
+            {Number(product.productPrice).toLocaleString("sq-AL")} ALL
+          </p>
 
-      <Link to="/">Back to Products</Link>
-    </div>
+          <div className="details-divider"></div>
+
+          <h3>DESCRIPTION</h3>
+          <p className="details-description">{product.productDescription}</p>
+
+          <div className="details-meta">
+            <p>
+              <span>STOCK</span>
+              <strong>{product.stock}</strong>
+            </p>
+
+            <p>
+              <span>SELLER</span>
+              <strong>{product.username}</strong>
+            </p>
+          </div>
+
+          {user && user.id !== product.userId && product.stock > 0 && (
+            <div className="purchase-section">
+              <label htmlFor="quantity">QUANTITY</label>
+
+              <input
+                id="quantity"
+                type="number"
+                min="1"
+                max={product.stock}
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+              />
+
+              <button
+                onClick={handleAddToCart}
+                disabled={
+                  cartLoading ||
+                  Number(quantity) < 1 ||
+                  Number(quantity) > product.stock
+                }
+              >
+                {cartLoading ? "ADDING..." : "ADD TO CART"}
+              </button>
+
+              {cartMessage && <p className="cart-message">{cartMessage}</p>}
+            </div>
+          )}
+
+          {user && user.id === product.userId && (
+            <p className="details-notice">You cannot buy your own product.</p>
+          )}
+
+          {product.stock === 0 && (
+            <p className="details-notice out-of-stock-message">OUT OF STOCK</p>
+          )}
+
+          {!user && (
+            <p className="details-notice">
+              Please <Link to="/login">log in</Link> to add products to your
+              cart.
+            </p>
+          )}
+        </div>
+      </section>
+    </main>
   );
 }
 

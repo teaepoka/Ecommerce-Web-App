@@ -11,6 +11,7 @@ import EditProduct from "./pages/EditProduct";
 import Cart from "./pages/Cart";
 import MyOrders from "./pages/MyOrders";
 import Profile from "./pages/Profile";
+import BackToTop from "./components/BackToTop";
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
             </RequireAuth>
           }
         />
+
         <Route
           path="/my-products/edit/:id"
           element={
@@ -78,6 +80,9 @@ function App() {
           }
         />
       </Routes>
+
+      {/* Back to Top button appears on every page */}
+      <BackToTop />
     </>
   );
 }
