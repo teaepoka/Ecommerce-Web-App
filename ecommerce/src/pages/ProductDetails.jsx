@@ -62,8 +62,8 @@ function ProductDetails() {
 
   return (
     <main className="product-details-page">
-      <Link to="/" className="back-link">
-        ← BACK TO PRODUCTS
+      <Link to={backTo} className="back-link">
+        ← BACK TO {backTo === "/my-products" ? "MY PRODUCTS" : "PRODUCTS"}
       </Link>
 
       <section className="product-details-card">
