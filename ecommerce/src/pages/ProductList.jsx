@@ -19,6 +19,8 @@ function ProductList() {
     try {
       const data = await getAllProducts();
       setProducts(data);
+      console.log("PRODUCT DATA:", data);
+      console.log("IS ARRAY:", Array.isArray(data));
     } catch (err) {
       setError("Could not load products.");
     } finally {
