@@ -1,3 +1,19 @@
+## Environment Setup
+
+Before running the project, configure the API connection:
+
+1. Find the `.env.example` file in the project root.
+2. Create a copy of that file.
+3. Rename the copy to `.env.local`.
+4. Open `.env.local` and configure the API URL:(paste the URL)
+
+VITE_API_URL=https://ecommerce.coders.pragmatic.al
+
+5. Install dependencies and start the project:
+
+npm install
+npm run dev
+
 # CYBERMERCE
 
 ### A Cyberpunk E-Commerce Platform
