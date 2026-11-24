@@ -12,17 +12,17 @@ function Header() {
 
   return (
     <header className="header">
-      <Link to="/" className="logo">
+      <Link to={user ? "/" : "/login"} className="logo">
         CYBER<span>MERCE</span>
       </Link>
 
       <nav className="navigation">
-        <NavLink to="/" end>
-          <span>⌂</span> Products
-        </NavLink>
-
         {user ? (
           <>
+            <NavLink to="/" end>
+              <span>⌂</span> Products
+            </NavLink>
+
             <NavLink to="/my-products">
               <span>▦</span> My Products
             </NavLink>

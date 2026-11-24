@@ -20,12 +20,28 @@ function App() {
 
       <Routes>
         {/* Public pages */}
-        <Route path="/" element={<ProductList />} />
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/products/:id" element={<ProductDetails />} />
 
         {/* Private pages */}
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <ProductList />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/products/:id"
+          element={
+            <RequireAuth>
+              <ProductDetails />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/cart"
           element={
